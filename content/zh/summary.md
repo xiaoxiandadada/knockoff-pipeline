@@ -2,7 +2,7 @@
 title: 'Summary Statistics Pipeline'
 ---
 
-## 针对 Summary Statistics 的扩展
+## Summary Statistics Pipeline
 
 传统 Knockoff 需要个体级基因型数据，但 GWAS 通常只公开汇总统计量（Z-score、P值等）。本 Pipeline 采用 **GhostKnockoff** 和 **LAVA-Knock** 方法，实现了仅基于汇总统计量的 Knockoff 分析：
 
