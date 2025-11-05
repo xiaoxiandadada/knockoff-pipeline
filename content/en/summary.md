@@ -2,7 +2,6 @@
 title: 'Summary Statistics Pipeline'
 ---
 
-
 ## Summary Statistics Pipeline
 
 Traditional Knockoff requires individual-level genotype data, but GWAS typically only release summary statistics (Z-scores, p-values, etc.). This pipeline uses **GhostKnockoff** and **LAVA-Knock** to perform Knockoff analyses based solely on summary statistics:
@@ -90,12 +89,14 @@ Rscript run_pipeline.R --mode correl \
 Output file: `results/selection/<info>_<pheno>_selection.csv`
 
 Columns include:
+
 - `id, rsid, chr, pos`
 - `pval.orginal, pval.knockoff*`
 - `W, Qvalue, selected`
 - `geno_source`
 
 If chunking by LD blocks (`--ld_coord`), an additional `<prefix>_chunk_summary.csv` is produced, recording for each chunk:
+
 - range
 - source (ld_block/fallback)
 - number selected
@@ -103,18 +104,30 @@ If chunking by LD blocks (`--ld_coord`), an additional `<prefix>_chunk_summary.c
 ### Correlation mode
 
 Output files:
+
 - `results/correlation/<info>_<pheno1>__<pheno2>_bivariate.csv`
 - `results/correlation/<info>_<pheno1>__<pheno2>_significant_windows.csv`
 
 ## Directory Overview
 
-```
-g1000_eur/                    # default reference panel (.bed/.bim/.fam/.synonyms)
-demo_chr10_10_20Mb.*          # example real genotypes (PLINK)
-info_chr10_10_20Mb.csv        # example Info extracted from reference panel
-zscore_chr10_10_20Mb.tsv      # example GWAS subset
-zscore_formatted.tsv          # converted standard format
-results/                      # analysis outputs
-  ├── selection/              # variable selection results
-  └── correlation/            # local genetic correlation results
-```
+{{< filetree/container >}}
+  {{< filetree/folder name="g1000_eur" state="closed" >}}
+    {{< filetree/file name="g1000_eur.bed" >}}
+    {{< filetree/file name="g1000_eur.bim" >}}
+    {{< filetree/file name="g1000_eur.fam" >}}
+    {{< filetree/file name="g1000_eur.synonyms" >}}
+  {{< /filetree/folder >}}
+  {{< filetree/file name="deCODE_EUR_LD_blocks.bed" >}}
+  {{< filetree/file name="LAVA_s2500_m25_f1_w200.blocks" >}}
+  {{< filetree/file name="accelerator.py" >}}
+  {{< filetree/file name="install_packages.R" >}}
+  {{< filetree/file name="run_pipeline.R" >}}
+  {{< filetree/file name="summary_pipeline.R" >}}
+  {{< filetree/file name="plotting.R" >}}
+  {{< filetree/folder name="results" state="closed" >}}
+    {{< filetree/folder name="selection" state="closed" >}}
+    {{< /filetree/folder >}}
+    {{< filetree/folder name="correlation" state="closed" >}}
+    {{< /filetree/folder >}}
+  {{< /filetree/folder >}}
+{{< /filetree/container >}}

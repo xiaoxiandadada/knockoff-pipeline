@@ -23,3 +23,7 @@ menu:
       weight: 100
       params:
         type: search
+
+markup:
+  highlight:
+    noClasses: false
