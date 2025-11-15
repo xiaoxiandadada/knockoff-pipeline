@@ -1,6 +1,9 @@
 ---
-title: 'Summary Statistics Pipeline'
+title: Summary Statistics Pipeline
+weight: 2
 ---
+
+{{< icon "github" >}}&nbsp;[xiaoxiandadada/Summary-Statistics-Pipeline](https://github.com/xiaoxiandadada/Summary-Statistics-Pipeline)
 
 ## Summary Statistics Pipeline
 
@@ -9,7 +12,6 @@ title: 'Summary Statistics Pipeline'
 - **GhostKnockoff**：利用参考面板的 LD 结构，从汇总统计量中重构 knockoff 统计量
 - **LAVA-Knock**：扩展到局部遗传相关分析，支持多表型联合分析
 - **无需个体数据**：仅需 Z-score 和参考面板（如 1000 Genomes）即可运行
-
 
 ## 主要功能
 
@@ -90,12 +92,14 @@ Rscript run_pipeline.R --mode correl \
 输出文件：`results/selection/<info>_<pheno>_selection.csv`
 
 列包含：
+
 - `id, rsid, chr, pos`
 - `pval.orginal, pval.knockoff*`
 - `W, Qvalue, selected`
 - `geno_source`
 
 若按 LD blocks 切块（`--ld_coord`），会额外生成 `<prefix>_chunk_summary.csv`，记录每个分块的：
+
 - 范围
 - 来源（ld_block/fallback）
 - 选择数
@@ -103,6 +107,7 @@ Rscript run_pipeline.R --mode correl \
 ### Correlation 模式
 
 输出文件：
+
 - `results/correlation/<info>_<pheno1>__<pheno2>_bivariate.csv`
 - `results/correlation/<info>_<pheno1>__<pheno2>_significant_windows.csv`
 

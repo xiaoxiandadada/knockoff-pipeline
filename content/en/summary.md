@@ -1,6 +1,9 @@
 ---
-title: 'Summary Statistics Pipeline'
+title: Summary Statistics Pipeline
+weight: 2
 ---
+
+{{< icon "github" >}}&nbsp;[xiaoxiandadada/Summary-Statistics-Pipeline](https://github.com/xiaoxiandadada/Summary-Statistics-Pipeline)
 
 ## Summary Statistics Pipeline
 
