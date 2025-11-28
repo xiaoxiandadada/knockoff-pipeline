@@ -5,8 +5,6 @@ weight: 2
 
 {{< icon "github" >}}&nbsp;[xiaoxiandadada/Summary-Statistics-Pipeline](https://github.com/xiaoxiandadada/Summary-Statistics-Pipeline)
 
-## Summary Statistics Pipeline
-
 Traditional Knockoff requires individual-level genotype data, but GWAS typically only release summary statistics (Z-scores, p-values, etc.). This pipeline uses **GhostKnockoff** and **LAVA-Knock** to perform Knockoff analyses based solely on summary statistics:
 
 - **GhostKnockoff**: Reconstructs knockoff statistics from summary data using LD structure from a reference panel.
