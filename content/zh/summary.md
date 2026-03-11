@@ -110,15 +110,27 @@ Rscript run_pipeline.R --mode correl \
 - `results/correlation/<info>_<pheno1>__<pheno2>_bivariate.csv`
 - `results/correlation/<info>_<pheno1>__<pheno2>_significant_windows.csv`
 
-## 目录速览
+## Directory Overview
 
-```
-g1000_eur/                    # 默认参考面板 (.bed/.bim/.fam/.synonyms)
-demo_chr10_10_20Mb.*          # 示例真实基因型（PLINK）
-info_chr10_10_20Mb.csv        # 由参考面板提取的示例 Info
-zscore_chr10_10_20Mb.tsv      # 示例 GWAS 子集
-zscore_formatted.tsv          # 转换后的标准格式
-results/                      # 分析输出目录
-  ├── selection/              # 变量选择结果
-  └── correlation/            # 局部遗传相关结果
-```
+{{< filetree/container >}}
+  {{< filetree/folder name="g1000_eur" state="closed" >}}
+    {{< filetree/file name="g1000_eur.bed" >}}
+    {{< filetree/file name="g1000_eur.bim" >}}
+    {{< filetree/file name="g1000_eur.fam" >}}
+    {{< filetree/file name="g1000_eur.synonyms" >}}
+  {{< /filetree/folder >}}
+  {{< filetree/file name="deCODE_EUR_LD_blocks.bed" >}}
+  {{< filetree/file name="LAVA_s2500_m25_f1_w200.blocks" >}}
+  {{< filetree/file name="accelerator.py" >}}
+  {{< filetree/file name="install_packages.R" >}}
+  {{< filetree/file name="run_pipeline.R" >}}
+  {{< filetree/file name="summary_pipeline.R" >}}
+  {{< filetree/file name="plotting.R" >}}
+  {{< filetree/folder name="results" state="closed" >}}
+    {{< filetree/folder name="selection" state="closed" >}}
+    {{< /filetree/folder >}}
+    {{< filetree/folder name="correlation" state="closed" >}}
+    {{< /filetree/folder >}}
+  {{< /filetree/folder >}}
+{{< /filetree/container >}}
+
