@@ -83,5 +83,4 @@ def knowledge_paths() -> list[pathlib.Path]:
 
     return [
         ROOT_DIR / "content",
-        ROOT_DIR / "README.md",
     ]

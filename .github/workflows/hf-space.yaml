@@ -1,0 +1,66 @@
+name: Sync Bot Backend to Hugging Face Space
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - ".github/workflows/hf-space.yaml"
+      - "Dockerfile"
+      - "requirements.txt"
+      - "backend/**"
+      - "content/**"
+      - "README.md"
+      - "space/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check Hugging Face configuration
+        id: config
+        env:
+          HF_SPACE_REPO: ${{ vars.HF_SPACE_REPO }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          if [ -z "$HF_SPACE_REPO" ] || [ -z "$HF_TOKEN" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "Skipping sync because HF_SPACE_REPO or HF_TOKEN is missing."
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Prepare Space bundle
+        if: steps.config.outputs.configured == 'true'
+        run: |
+          BUNDLE_DIR="$RUNNER_TEMP/hf-space"
+          mkdir -p "$BUNDLE_DIR"
+          cp Dockerfile "$BUNDLE_DIR/Dockerfile"
+          cp requirements.txt "$BUNDLE_DIR/requirements.txt"
+          cp README.md "$BUNDLE_DIR/PROJECT_README.md"
+          cp space/README.md "$BUNDLE_DIR/README.md"
+          cp -R backend "$BUNDLE_DIR/backend"
+          cp -R content "$BUNDLE_DIR/content"
+
+      - name: Push to Hugging Face Space
+        if: steps.config.outputs.configured == 'true'
+        env:
+          HF_SPACE_REPO: ${{ vars.HF_SPACE_REPO }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          BUNDLE_DIR="$RUNNER_TEMP/hf-space"
+          cd "$BUNDLE_DIR"
+          git init
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b main
+          git add .
+          git commit -m "Sync from GitHub"
+          git remote add origin "https://oauth2:${HF_TOKEN}@huggingface.co/spaces/${HF_SPACE_REPO}"
+          git push --force origin main

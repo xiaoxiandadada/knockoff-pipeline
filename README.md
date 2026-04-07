@@ -24,36 +24,21 @@ This repository now supports that split deployment model:
 - a separate backend service runs `backend/app.py`
 - the site reads `BOT_API_URL` at build time
 
-### Backend deployment
+### Hugging Face Spaces backend
 
 This repository includes a production container:
 
 - `Dockerfile`
 - `requirements.txt`
 
-Deploy that container to any platform that can run a Docker web service, for example:
+This repository is now set up to sync the bot backend to a Docker-based Hugging Face Space.
 
-- Render
-- Railway
-- Fly.io
-- Google Cloud Run
+Files used for the Space deployment:
 
-This repository also includes a ready-to-import Render Blueprint:
-
-- `render.yaml`
-
-For Render, the shortest path is:
-
-1. In Render, choose Blueprint and import this GitHub repository.
-2. Create the `knockoff-bot-api` service from `render.yaml`.
-3. Enter a real `GEMINI_API_KEY` when Render prompts for the `sync: false` secret.
-4. After the service is live, copy its public URL and set the GitHub repository variable:
-
-```text
-BOT_API_URL=https://your-render-service.onrender.com/api
-```
-
-5. Push any commit to `main`, or rerun the Pages workflow, so GitHub Pages rebuilds with the remote bot URL.
+- `Dockerfile`
+- `requirements.txt`
+- `.github/workflows/hf-space.yaml`
+- `space/README.md`
 
 Required backend environment variables:
 
@@ -63,7 +48,31 @@ Required backend environment variables:
 - optional `KNOCKOFF_BOT_SOURCES`
 
 If you do not provide `KNOCKOFF_BOT_SOURCES`, the backend uses only this repository's
-`content/` and `README.md`, which makes remote deployment portable.
+`content/`, which keeps the bot focused on the published site content.
+
+### Hugging Face setup
+
+1. Create a new Docker Space on Hugging Face.
+2. Note the Space repo path, for example:
+
+```text
+your-username/knockoff-bot-api
+```
+
+3. In this GitHub repository, set:
+
+- Actions variable: `HF_SPACE_REPO=your-username/knockoff-bot-api`
+- Actions secret: `HF_TOKEN=...`
+
+4. In the Hugging Face Space settings, add runtime secrets such as:
+
+- `LLM_PROVIDER=gemini`
+- `GEMINI_API_KEY=...`
+- `OPENAI_MODEL=gemini-2.5-flash-lite`
+
+5. Push to `main` or manually run `.github/workflows/hf-space.yaml`.
+
+That workflow force-pushes a clean API-only bundle to the Space repository.
 
 ### GitHub Pages integration
 
@@ -71,7 +80,7 @@ The Pages workflow reads a repository variable named `BOT_API_URL`.
 Set it to your deployed backend, for example:
 
 ```text
-https://your-bot-service.example.com/api
+https://your-username-knockoff-bot-api.hf.space/api
 ```
 
 Then push to `main` and the built site will point the floating bot at that remote API.
@@ -157,8 +166,5 @@ Then set a real `GEMINI_API_KEY` and deploy the backend container.
 By default the bot indexes:
 
 - `content/`
-- `README.md`
-- `/Users/bytedance/Documents/Summary-Statistics-Pipeline/README.md`
-- `/Users/bytedance/Documents/Summary-Statistics-Pipeline/CALLFLOW.md`
 
-Override them with `KNOCKOFF_BOT_SOURCES`, using `:` as the path separator on macOS.
+Override them with `KNOCKOFF_BOT_SOURCES`, using `:` as the path separator on macOS or Linux.
