@@ -77,3 +77,198 @@
 /* GenericTraceback */ .chroma .gt { color:#04d }
 /* GenericUnderline */ .chroma .gl { text-decoration:underline }
 /* TextWhitespace */ .chroma .w { color:#bbb }
+
+.knockoff-bot-launcher {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 50;
+  width: 3.5rem;
+  height: 3.5rem;
+}
+
+.knockoff-bot-trigger {
+  width: 3.5rem;
+  height: 3.5rem;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(145deg, #0b4552, #147185);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 18px 40px rgba(11, 69, 82, 0.28);
+  cursor: pointer;
+  user-select: none;
+  touch-action: none;
+  -webkit-user-select: none;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.knockoff-bot-trigger:hover {
+  transform: translateY(-1px);
+}
+
+.knockoff-bot-launcher.is-dragging .knockoff-bot-trigger,
+.knockoff-bot-trigger:active {
+  cursor: grabbing;
+  transform: none;
+}
+
+.knockoff-bot-launcher.is-open,
+.knockoff-bot-launcher.is-dragging {
+  transform: none !important;
+}
+
+.knockoff-bot-trigger-icon {
+  width: 1.6rem;
+  height: 1.6rem;
+  fill: currentColor;
+}
+
+.knockoff-bot-panel {
+  position: absolute;
+  bottom: calc(100% + 0.8rem);
+  width: min(430px, calc(100vw - 1.5rem));
+  height: min(720px, calc(100vh - 7rem));
+  overflow: hidden;
+  border-radius: 22px;
+  border: 1px solid rgba(17, 24, 39, 0.14);
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
+}
+
+.knockoff-bot-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid rgba(17, 24, 39, 0.08);
+  background: linear-gradient(145deg, rgba(20, 113, 133, 0.1), rgba(11, 69, 82, 0.16));
+}
+
+.knockoff-bot-header p {
+  margin: 0.2rem 0 0;
+  font-size: 0.92rem;
+  color: #5b6770;
+}
+
+.knockoff-bot-close {
+  border: 0;
+  background: transparent;
+  color: #0b4552;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.knockoff-bot-shell {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  height: calc(100% - 74px);
+  background: #fff;
+}
+
+.knockoff-bot-status {
+  padding: 0.7rem 0.95rem;
+  font-size: 0.9rem;
+  border-bottom: 1px solid rgba(17, 24, 39, 0.08);
+  color: #0b4552;
+}
+
+.knockoff-bot-status[data-state="error"] {
+  color: #9b3124;
+}
+
+.knockoff-bot-messages {
+  overflow: auto;
+  padding: 0.95rem;
+  display: grid;
+  gap: 0.8rem;
+  align-content: start;
+}
+
+.knockoff-bot-message {
+  border-radius: 16px;
+  padding: 0.85rem 0.9rem;
+  border: 1px solid rgba(17, 24, 39, 0.08);
+}
+
+.knockoff-bot-message--bot,
+.knockoff-bot-message--system {
+  background: #f7fbfc;
+}
+
+.knockoff-bot-message--you {
+  background: #eef6f8;
+}
+
+.knockoff-bot-message header {
+  margin-bottom: 0.45rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #0b4552;
+}
+
+.knockoff-bot-message-body {
+  white-space: pre-wrap;
+  line-height: 1.45;
+  color: #1f2d33;
+}
+
+.knockoff-bot-citations {
+  margin: 0.75rem 0 0;
+  padding: 0 0 0 1rem;
+  color: #5b6770;
+  font-size: 0.9rem;
+}
+
+.knockoff-bot-form {
+  display: grid;
+  gap: 0.7rem;
+  padding: 0.95rem;
+  border-top: 1px solid rgba(17, 24, 39, 0.08);
+}
+
+.knockoff-bot-form textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 76px;
+  max-height: 180px;
+  border: 1px solid rgba(17, 24, 39, 0.14);
+  border-radius: 14px;
+  padding: 0.75rem 0.8rem;
+  font: inherit;
+}
+
+.knockoff-bot-send {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.75rem 1rem;
+  background: #0b4552;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (max-width: 860px) {
+  .knockoff-bot-launcher {
+    width: 3.2rem;
+    height: 3.2rem;
+    right: 0.75rem;
+    bottom: 0.75rem;
+  }
+
+  .knockoff-bot-trigger {
+    width: 3.2rem;
+    height: 3.2rem;
+  }
+
+  .knockoff-bot-panel {
+    width: calc(100vw - 1rem);
+    height: min(78vh, 700px);
+    bottom: calc(100% + 0.65rem);
+  }
+}

@@ -1,3 +1,7 @@
 public/
 .hugo_build.lock
-
+.DS_Store
+.env.local
+runtime/
+backend/__pycache__/
+*.pyc

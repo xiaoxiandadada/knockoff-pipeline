@@ -1,1 +1,147 @@
 # Knockoff pipeline
+
+This repository now includes a floating website bot backed by a retrieval service.
+The bot answers from knockoff-related project documents and can optionally use an
+OpenAI-compatible LLM API to synthesize grounded answers.
+
+## Run locally
+
+```bash
+./scripts/run_portal.sh
+```
+
+Then open:
+
+- `http://127.0.0.1:1313/`
+- `http://127.0.0.1:1313/overview/`
+
+## Deploy without your laptop
+
+The website can stay on GitHub Pages, but the bot backend must run somewhere else.
+This repository now supports that split deployment model:
+
+- GitHub Pages serves the static Hugo site
+- a separate backend service runs `backend/app.py`
+- the site reads `BOT_API_URL` at build time
+
+### Backend deployment
+
+This repository includes a production container:
+
+- `Dockerfile`
+- `requirements.txt`
+
+Deploy that container to any platform that can run a Docker web service, for example:
+
+- Render
+- Railway
+- Fly.io
+- Google Cloud Run
+
+Required backend environment variables:
+
+- `LLM_PROVIDER`
+- provider key such as `GEMINI_API_KEY`
+- optional `OPENAI_MODEL`
+- optional `KNOCKOFF_BOT_SOURCES`
+
+If you do not provide `KNOCKOFF_BOT_SOURCES`, the backend uses only this repository's
+`content/` and `README.md`, which makes remote deployment portable.
+
+### GitHub Pages integration
+
+The Pages workflow reads a repository variable named `BOT_API_URL`.
+Set it to your deployed backend, for example:
+
+```text
+https://your-bot-service.example.com/api
+```
+
+Then push to `main` and the built site will point the floating bot at that remote API.
+If `BOT_API_URL` is not set, the production Pages build disables the bot instead of
+shipping a broken `localhost` endpoint.
+
+## Enable Groq for summarized answers
+
+The bot already supports OpenAI-compatible providers. Groq is the simplest option to
+try first because it works with the existing `/chat/completions` integration.
+
+1. Copy the example config:
+
+```bash
+cp .env.groq.example .env.local
+```
+
+2. Edit `.env.local` and set your real `GROQ_API_KEY`.
+
+3. Start the site again:
+
+```bash
+./scripts/run_portal.sh
+```
+
+When Groq is enabled, `/api/health` will report:
+
+- `llm.provider = "groq"`
+- `llm.configured = true`
+
+Default Groq settings used by this repo:
+
+- `LLM_PROVIDER=groq`
+- `OPENAI_BASE_URL=https://api.groq.com/openai/v1`
+- `OPENAI_MODEL=llama-3.1-8b-instant`
+
+## Use a local model with Ollama
+
+If Groq is unstable, the simplest stable alternative is running a local model through
+Ollama. This repo can talk to Ollama through its OpenAI-compatible endpoint, so no
+frontend changes are needed.
+
+1. Install Ollama and pull a model, for example:
+
+```bash
+ollama pull qwen2.5:3b
+```
+
+2. Copy the example config:
+
+```bash
+cp .env.ollama.example .env.local
+```
+
+3. Start the site:
+
+```bash
+./scripts/run_portal.sh
+```
+
+Expected health status:
+
+- `llm.provider = "ollama"`
+- `llm.configured = true`
+- `llm.base_url = "http://127.0.0.1:11434/v1"`
+
+This path removes third-party API instability, but answer quality and latency depend on
+your local machine and chosen model.
+
+## Use Gemini instead of local Ollama
+
+If you want the bot to work without your laptop running, use a hosted provider.
+Gemini is supported through its OpenAI-compatible endpoint.
+
+```bash
+cp .env.gemini.example .env.local
+```
+
+Then set a real `GEMINI_API_KEY` and deploy the backend container.
+
+## Knowledge sources
+
+By default the bot indexes:
+
+- `content/`
+- `README.md`
+- `/Users/bytedance/Documents/Summary-Statistics-Pipeline/README.md`
+- `/Users/bytedance/Documents/Summary-Statistics-Pipeline/CALLFLOW.md`
+
+Override them with `KNOCKOFF_BOT_SOURCES`, using `:` as the path separator on macOS.

@@ -55,8 +55,24 @@ jobs:
           HUGO_ENVIRONMENT: production
           HUGO_ENV: production
         run: |
+          python3 - <<'PY'
+          import pathlib
+
+          config = pathlib.Path("hugo.yaml")
+          text = config.read_text(encoding="utf-8")
+          bot_api_url = """${{ vars.BOT_API_URL }}""".strip()
+
+          if bot_api_url:
+              text = text.replace("    enabled: true", "    enabled: true", 1)
+              text = text.replace("    apiURL: http://127.0.0.1:8000/api", f"    apiURL: {bot_api_url}", 1)
+          else:
+              text = text.replace("    enabled: true", "    enabled: false", 1)
+
+          config.write_text(text, encoding="utf-8")
+          PY
           hugo \
             --gc --minify \
+            --disableKinds rss \
             --baseURL "https://knockoff-pipeline.site/"
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
