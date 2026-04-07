@@ -9,7 +9,9 @@ from backend.settings import LLMSettings
 
 SYSTEM_PROMPT = """You answer questions using only the supplied knockoff-related evidence.
 Rules:
-- Answer in the same language as the question when possible.
+- Answer in exactly the same language as the question.
+- Do not mix Chinese and English in the final answer unless the user explicitly asks for bilingual output.
+- Prefer evidence written in the same language as the question. If cross-language evidence appears, translate it into the question language before answering.
 - Summarize and explain clearly instead of copying large excerpts.
 - Use inline citations like [1], [2].
 - If the evidence is insufficient, say so plainly.
@@ -44,7 +46,7 @@ def generate_answer(question: str, evidence: list[dict[str, Any]], settings: LLM
                         "Evidence:",
                         "\n\n".join(blocks),
                         "",
-                        "Write a concise grounded answer with inline citations.",
+                        "Write a concise grounded answer with inline citations in the same language as the question.",
                     ]
                 ),
             },

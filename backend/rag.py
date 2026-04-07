@@ -46,6 +46,17 @@ def tokenize(text: str) -> list[str]:
     return re.findall(r"[A-Za-z0-9_]{2,}|[\u4e00-\u9fff]", text.lower())
 
 
+def detect_question_language(text: str) -> str:
+    return "zh" if re.search(r"[\u4e00-\u9fff]", text) else "en"
+
+
+def source_language(source_path: str) -> str:
+    normalized = source_path.replace("\\", "/").lower()
+    if "/content/zh/" in normalized:
+        return "zh"
+    return "en"
+
+
 def parse_path(path: pathlib.Path) -> ParsedDocument:
     text = path.read_text(encoding="utf-8", errors="ignore")
     if path.suffix.lower() in {".md", ".markdown", ".rst"}:
@@ -185,13 +196,22 @@ class KnowledgeBase:
                 scored.append((score, chunk))
 
         scored.sort(key=lambda item: item[0], reverse=True)
+        preferred_language = detect_question_language(question)
+        preferred = [chunk for _, chunk in scored if source_language(chunk["source_path"]) == preferred_language]
+        if preferred:
+            return preferred[:top_k]
         return [chunk for _, chunk in scored[:top_k]]
 
     def answer_extractively(self, question: str, top_k: int = 4) -> dict[str, Any]:
         matches = self.retrieve(question, top_k=top_k)
         if not matches:
+            language = detect_question_language(question)
             return {
-                "answer": "I could not find grounded knockoff-related evidence for that question.",
+                "answer": (
+                    "我没有找到能支撑这个问题的 knockoff 相关证据。"
+                    if language == "zh"
+                    else "I could not find grounded knockoff-related evidence for that question."
+                ),
                 "citations": [],
                 "matches": [],
                 "mode": "empty",
