@@ -27,6 +27,7 @@
     class="knockoff-bot-launcher"
     data-bot-root
     data-api-url="{{ $apiURL }}"
+    data-local-api-url="http://127.0.0.1:8000/api"
     data-status-ready="{{ if $isZh }}可以开始提问{{ else }}Ready for questions{{ end }}"
     data-status-loading="{{ if $isZh }}正在思考...{{ else }}Thinking...{{ end }}"
     data-status-offline="{{ if $isZh }}Bot 后端当前不可用。{{ else }}Bot backend is currently unavailable.{{ end }}"

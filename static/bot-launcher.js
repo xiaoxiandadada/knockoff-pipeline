@@ -10,7 +10,8 @@
   const input = root.querySelector("[data-bot-input]");
   const messages = root.querySelector("[data-bot-messages]");
   const statusNode = root.querySelector("[data-bot-status]");
-  const apiURL = root.dataset.apiUrl;
+  const isLocalHost = ["127.0.0.1", "localhost"].includes(window.location.hostname);
+  const apiURL = isLocalHost && root.dataset.localApiUrl ? root.dataset.localApiUrl : root.dataset.apiUrl;
 
   if (!trigger || !panel || !closeButton || !form || !input || !messages || !statusNode || !apiURL) return;
   trigger.draggable = false;

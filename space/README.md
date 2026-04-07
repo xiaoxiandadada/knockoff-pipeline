@@ -1,7 +1,7 @@
 ---
 title: Knockoff Bot API
 emoji: "🧬"
-colorFrom: "teal"
+colorFrom: "green"
 colorTo: "blue"
 sdk: docker
 app_port: 8000
@@ -17,4 +17,3 @@ Backend API for the Knockoff Pipeline website bot.
 - Reindex: `/api/reindex`
 
 This Space serves the API only. The public website stays on GitHub Pages.
-

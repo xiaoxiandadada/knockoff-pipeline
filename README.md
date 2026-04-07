@@ -22,7 +22,7 @@ This repository now supports that split deployment model:
 
 - GitHub Pages serves the static Hugo site
 - a separate backend service runs `backend/app.py`
-- the site reads `BOT_API_URL` at build time
+- the public site points to the deployed Hugging Face Space API
 
 ### Hugging Face Spaces backend
 
@@ -76,16 +76,19 @@ That workflow force-pushes a clean API-only bundle to the Space repository.
 
 ### GitHub Pages integration
 
-The Pages workflow reads a repository variable named `BOT_API_URL`.
-Set it to your deployed backend, for example:
+The public site is now configured to use:
 
 ```text
-https://your-username-knockoff-bot-api.hf.space/api
+https://fairy10-knockoff-bot-api.hf.space/api
 ```
 
-Then push to `main` and the built site will point the floating bot at that remote API.
-If `BOT_API_URL` is not set, the production Pages build disables the bot instead of
-shipping a broken `localhost` endpoint.
+For local development, the bot launcher automatically switches back to:
+
+```text
+http://127.0.0.1:8000/api
+```
+
+when the site is opened on `localhost` or `127.0.0.1`.
 
 ## Enable Groq for summarized answers
 

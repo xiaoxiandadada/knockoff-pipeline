@@ -33,4 +33,4 @@ markup:
 params:
   bot:
     enabled: true
-    apiURL: http://127.0.0.1:8000/api
+    apiURL: https://fairy10-knockoff-bot-api.hf.space/api
