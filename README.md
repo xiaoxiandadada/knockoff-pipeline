@@ -38,6 +38,23 @@ Deploy that container to any platform that can run a Docker web service, for exa
 - Fly.io
 - Google Cloud Run
 
+This repository also includes a ready-to-import Render Blueprint:
+
+- `render.yaml`
+
+For Render, the shortest path is:
+
+1. In Render, choose Blueprint and import this GitHub repository.
+2. Create the `knockoff-bot-api` service from `render.yaml`.
+3. Enter a real `GEMINI_API_KEY` when Render prompts for the `sync: false` secret.
+4. After the service is live, copy its public URL and set the GitHub repository variable:
+
+```text
+BOT_API_URL=https://your-render-service.onrender.com/api
+```
+
+5. Push any commit to `main`, or rerun the Pages workflow, so GitHub Pages rebuilds with the remote bot URL.
+
 Required backend environment variables:
 
 - `LLM_PROVIDER`

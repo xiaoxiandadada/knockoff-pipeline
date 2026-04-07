@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: knockoff-bot-api
+    runtime: docker
+    plan: free
+    autoDeployTrigger: commit
+    healthCheckPath: /api/health
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: LLM_PROVIDER
+        value: gemini
+      - key: OPENAI_MODEL
+        value: gemini-2.5-flash-lite
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: KNOCKOFF_BOT_SOURCES
+        value: /app/content:/app/README.md
+    buildFilter:
+      paths:
+        - Dockerfile
+        - requirements.txt
+        - backend/**
+        - content/**
+        - README.md
