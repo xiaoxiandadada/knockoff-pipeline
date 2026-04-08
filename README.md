@@ -4,6 +4,55 @@ This repository now includes a floating website bot backed by a retrieval servic
 The bot answers from knockoff-related project documents and can optionally use an
 OpenAI-compatible LLM API to synthesize grounded answers.
 
+## Bot architecture
+
+The website bot is implemented as a split frontend/backend system:
+
+- the public Hugo site renders the floating launcher and chat panel
+- a FastAPI backend indexes repository documents and serves `/api/chat`
+- the backend first retrieves grounded evidence from `content/`
+- if an LLM provider is configured, it synthesizes an answer from that evidence
+- if the LLM is unavailable, it falls back to extractive retrieval output
+
+Main implementation files:
+
+- `layouts/_partials/scripts.html`
+- `static/bot-launcher.js`
+- `assets/css/custom.css`
+- `backend/app.py`
+- `backend/rag.py`
+- `backend/llm.py`
+- `backend/settings.py`
+
+Request flow:
+
+```text
+User question
+  -> floating bot UI on the Hugo site
+  -> POST /api/chat
+  -> retrieve matching chunks from content/
+  -> optionally call Gemini / other OpenAI-compatible LLM
+  -> return answer + citations
+```
+
+Generated local bot data such as `runtime/bot/index.json` is only a cache.
+It can be deleted safely:
+
+- local development will rebuild it from `content/` on startup
+- the public website does not depend on your laptop cache
+- the deployed Hugging Face Space keeps its own bundled copy of `content/`
+
+What must remain is the repository knowledge source itself:
+
+- `content/` should stay in the repo if you want the bot to answer from site docs
+- deleting only local cache files is safe
+- deleting and pushing removal of `content/` will remove the bot's knowledge base
+
+For a fuller technical walkthrough, see:
+
+- `content/en/bot.md`
+- `content/zh/bot.md`
+
 ## Run locally
 
 ```bash
