@@ -52,6 +52,8 @@ For a fuller technical walkthrough, see:
 
 - `content/en/bot.md`
 - `content/zh/bot.md`
+- `content/en/bot-architecture.md`
+- `content/zh/bot-architecture.md`
 
 ## Run locally
 
