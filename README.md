@@ -66,6 +66,216 @@ Then open:
 - `http://127.0.0.1:1313/`
 - `http://127.0.0.1:1313/overview/`
 
+## Docker deployment
+
+This repository now includes a separate Docker-based development and deployment setup for:
+
+- `frontend`: Hugo + Hextra bilingual docs site
+- `backend`: FastAPI + RAG + OpenAI-compatible bot API
+- `analysis`: R/Python mixed Knockoff analysis runtime
+
+Important repository note:
+
+- `frontend` and `backend` code live in this repository
+- `analysis` code currently lives in the sibling repository `../Summary-Statistics-Pipeline`
+- the Docker Compose setup mounts that sibling repository into the `analysis` service
+- the existing root `Dockerfile` is still reserved for the production Hugging Face Space backend
+- local multi-service development uses the `docker/*.Dockerfile` files instead of replacing that root image
+
+Docker-related files added for this setup:
+
+- `.dockerignore`
+- `.env.docker.example`
+- `docker/frontend.Dockerfile`
+- `docker/backend.Dockerfile`
+- `docker/analysis.Dockerfile`
+- `docker-compose.yml`
+
+### Service mapping
+
+#### frontend
+
+Source of truth in this repository:
+
+- `content/`
+- `layouts/`
+- `static/`
+- `assets/`
+- `hugo.yaml`
+
+Container behavior:
+
+- uses a Go + Hugo extended environment
+- runs `hugo server`
+- exposes port `1313`
+- mounts the repository for live local development
+
+#### backend
+
+Source of truth in this repository:
+
+- `backend/`
+- `content/`
+
+Container behavior:
+
+- uses `python:3.11-slim`
+- installs `requirements.txt`
+- runs `uvicorn backend.app:app`
+- exposes port `8000`
+- mounts:
+  - `./content` as docs source
+  - `./vectorstore` as the bot runtime index cache
+
+#### analysis
+
+Source of truth in the sibling repository:
+
+- `../Summary-Statistics-Pipeline`
+
+Container behavior:
+
+- uses `rocker/r-ver`
+- installs core R packages such as `data.table`, `Matrix`, `survival`, `reticulate`, `bigsnpr`
+- installs Python plus `numpy`, `numba`, `pandas`
+- sets `RETICULATE_PYTHON=/usr/bin/python3`
+- builds a reusable runtime image from this repository only
+- mounts:
+  - `../Summary-Statistics-Pipeline` as the working analysis repo
+  - `./analysis-data` to the analysis `data/`
+  - `./analysis-results` to the analysis `results/`
+
+### Environment configuration
+
+Copy the example file:
+
+```bash
+cp .env.docker.example .env
+```
+
+Then fill in values such as:
+
+```bash
+LLM_PROVIDER=openai
+OPENAI_API_KEY=...
+OPENAI_BASE_URL=https://api.openai.com/v1
+MODEL_NAME=gpt-5-mini
+```
+
+Notes:
+
+- `MODEL_NAME` is mapped into the backend container as `OPENAI_MODEL`
+- you can switch providers by changing `LLM_PROVIDER` and `OPENAI_BASE_URL`
+
+### Build services
+
+Build everything:
+
+```bash
+docker compose build
+```
+
+Build only one service:
+
+```bash
+docker compose build frontend
+docker compose build backend
+docker compose build analysis
+```
+
+### Start services
+
+Start the docs site and bot backend:
+
+```bash
+docker compose up frontend backend
+```
+
+Start all services:
+
+```bash
+docker compose up
+```
+
+Run in detached mode:
+
+```bash
+docker compose up -d
+```
+
+### Access points
+
+After startup:
+
+- website: `http://127.0.0.1:1313`
+- bot API health: `http://127.0.0.1:8000/api/health`
+- bot API chat: `http://127.0.0.1:8000/api/chat`
+
+### Work inside the analysis container
+
+Open a shell:
+
+```bash
+docker compose run --rm analysis
+```
+
+Run an R script:
+
+```bash
+docker compose run --rm analysis Rscript run_pipeline.R --help
+```
+
+Run Python directly inside the same analysis environment:
+
+```bash
+docker compose run --rm analysis python3 -c "import numpy, numba, pandas; print('ok')"
+```
+
+Check reticulate wiring:
+
+```bash
+docker compose run --rm analysis Rscript -e "library(reticulate); py_config()"
+```
+
+### Enter running containers
+
+Frontend:
+
+```bash
+docker compose exec frontend bash
+```
+
+Backend:
+
+```bash
+docker compose exec backend bash
+```
+
+Analysis:
+
+```bash
+docker compose exec analysis bash
+```
+
+### Volumes and mounts
+
+Backend mounts:
+
+- `./content -> /app/content`
+- `./vectorstore -> /app/runtime/bot`
+
+Analysis mounts:
+
+- `../Summary-Statistics-Pipeline -> /workspace/analysis`
+- `./analysis-data -> /workspace/analysis/data`
+- `./analysis-results -> /workspace/analysis/results`
+
+This means:
+
+- bot index cache persists outside the backend container
+- analysis outputs persist outside the analysis container
+- you can inspect and version-control wrapper files without baking results into images
+
 ## Deploy without your laptop
 
 The website can stay on GitHub Pages, but the bot backend must run somewhere else.

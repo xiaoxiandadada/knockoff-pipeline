@@ -1,0 +1,79 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend.Dockerfile
+    depends_on:
+      - backend
+    env_file:
+      - .env
+    environment:
+      HUGO_ENVIRONMENT: development
+      HUGO_ENV: development
+      HUGO_CACHEDIR: /tmp/hugo_cache
+    working_dir: /site
+    command:
+      - hugo
+      - server
+      - --bind
+      - 0.0.0.0
+      - --port
+      - "1313"
+      - --disableKinds
+      - rss
+      - --baseURL
+      - http://localhost:1313/
+    ports:
+      - "1313:1313"
+    volumes:
+      - ./:/site
+      - hugo_cache:/tmp/hugo_cache
+
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+    env_file:
+      - .env
+    environment:
+      LLM_PROVIDER: ${LLM_PROVIDER:-openai}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-}
+      OPENAI_MODEL: ${MODEL_NAME:-gpt-5-mini}
+      KNOCKOFF_BOT_SOURCES: /app/content
+    working_dir: /app
+    command:
+      - uvicorn
+      - backend.app:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - --reload
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app/backend
+      - ./content:/app/content
+      - ./vectorstore:/app/runtime/bot
+
+  analysis:
+    build:
+      context: .
+      dockerfile: docker/analysis.Dockerfile
+    env_file:
+      - .env
+    environment:
+      RETICULATE_PYTHON: /usr/bin/python3
+    working_dir: /workspace/analysis
+    command:
+      - bash
+    stdin_open: true
+    tty: true
+    volumes:
+      - ../Summary-Statistics-Pipeline:/workspace/analysis
+      - ./analysis-data:/workspace/analysis/data
+      - ./analysis-results:/workspace/analysis/results
+
+volumes:
+  hugo_cache:
