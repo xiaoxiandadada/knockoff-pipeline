@@ -135,10 +135,16 @@ Source of truth in the sibling repository:
 
 Container behavior:
 
-- uses `rocker/r-ver`
-- installs core R packages such as `data.table`, `Matrix`, `survival`, `reticulate`, `bigsnpr`
+- uses `python:3.11-slim` with R installed through Debian packages
+- installs core R packages such as `data.table`, `Matrix`, `survival`, `reticulate`, `optparse`, `readr`, `corpcor`, `bigsnpr`
+- installs CRAN-only analysis packages with required/imported dependencies only, avoiding heavy suggested packages during Docker builds
+- installs Knockoff-specific runtime packages:
+  - `GhostKnockoff` from `cran/GhostKnockoff`
+  - `LAVAKnock` from `shiyangm/LAVA-Knock`
+  - `snpStats`, `graph`, `MatrixGenerics` from Bioconductor
 - installs Python plus `numpy`, `numba`, `pandas`
 - sets `RETICULATE_PYTHON=/usr/bin/python3`
+- points command-line `python3` at the same Debian Python used by `reticulate`
 - builds a reusable runtime image from this repository only
 - mounts:
   - `../Summary-Statistics-Pipeline` as the working analysis repo
@@ -173,6 +179,12 @@ Build everything:
 
 ```bash
 docker compose build
+```
+
+If Docker is installed through Colima on macOS, start the engine first:
+
+```bash
+colima start
 ```
 
 Build only one service:
@@ -235,6 +247,13 @@ Check reticulate wiring:
 
 ```bash
 docker compose run --rm analysis Rscript -e "library(reticulate); py_config()"
+```
+
+Verify the real analysis entrypoint and Python accelerator:
+
+```bash
+docker compose run --rm analysis Rscript run_pipeline.R --help
+docker compose run --rm analysis Rscript -e 'library(reticulate); source_python("accelerator.py"); cat("accelerator-ok\n")'
 ```
 
 ### Enter running containers

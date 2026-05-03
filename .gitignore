@@ -1,7 +1,11 @@
 public/
 .hugo_build.lock
 .DS_Store
+.env
 .env.local
 runtime/
+vectorstore/
+analysis-data/
+analysis-results/
 backend/__pycache__/
 *.pyc
